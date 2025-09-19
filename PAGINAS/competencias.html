@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Competencias</title>
+  <link rel="stylesheet" href="../CSS/competencias.css"> 
+</head>
+<body>
+  <h1>Gestión de Competencias</h1>
+  <form id="formCompetencia">
+    <div class="form-group">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" required>
+    </div>
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <textarea id="descripcion" required></textarea>
+    </div>
+    <button type="submit" id="btnSubmit">Agregar</button>
+  </form>
+
+  <table border="1" style="margin-top:20px; width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaCompetencias"></tbody>
+  </table>
+
+  <script src="../JS/competencia.js"></script>
+
+</body>
+</html>
+
+
+
+

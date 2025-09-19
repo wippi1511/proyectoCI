@@ -1,0 +1,169 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* sidebar */
+.sidebar {
+  height: 100vh;
+  background-color: #1e88e5;
+  color: white;
+  padding-top: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 220px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar h4 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  padding: 12px 20px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.sidebar a:hover {
+  background-color: #1565c0;
+}
+
+/* contenido */
+.content {
+  margin-left: 220px;
+  padding: 30px;
+  transition: margin-left 0.3s ease;
+}
+
+table th {
+  background-color: #1e88e5;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #1e88e5;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #1565c0;
+}
+
+/* botones de acciones */
+td .btn {
+  display: inline-block;
+  margin: 2px;
+  width: auto;
+}
+
+td {
+  white-space: nowrap;
+}
+
+/* boton flotante para el menu */
+.menu-toggle {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1200;
+  border-radius: 50%;
+  padding: 12px 16px;
+  background-color: rgba(30, 136, 229, 0.85);
+  border: none;
+  display: none;
+}
+
+/* overlay oscuro */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 900;
+}
+
+/* --- TARJETAS RESPONSIVAS --- */
+/* hasta 1309px las filas se transforman en tarjetas */
+@media (max-width: 1309px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+    width: 100%;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tbody tr {
+    margin-bottom: 15px;
+    background-color: #f5f7fa;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 8px;
+    text-align: left;
+    flex-wrap: wrap;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 40%;
+    flex-shrink: 0;
+  }
+
+  td:last-child {
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  td:last-child .btn {
+    width: 100%;
+    margin: 5px 0;
+    font-size: 13px;
+    padding: 6px 0;
+  }
+}
+
+/* sidebar en celulares */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .overlay.active {
+    display: block;
+  }
+}

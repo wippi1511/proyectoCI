@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Profesores</title>
+    <link rel="stylesheet" href="../CSS/profesores.css"> 
+ 
+</head>
+<body>
+  <h1>Gestión de Profesores</h1>
+
+  <form id="formProfesor">
+    <label>Usuario:</label>
+    <select id="usuario" required>
+        <option value="user1">user1</option>
+        <option value="user2">user2</option>
+        <option value="user3">user3</option>
+        <option value="user4">user4</option>
+        <option value="user5">user5</option>
+    </select>
+    <br>
+
+    <label>Nombre:</label>
+    <input type="text" id="nombre" required>
+    <br>
+
+    <label>Apellidos:</label>
+    <input type="text" id="apellido" required>
+    <br>
+
+    <label>Fecha de Ingreso:</label>
+    <input type="date" id="fecha" required>
+    <br>
+
+    <label>Estado:</label>
+    <select id="estado" required>
+      <option value="Activo">Activo</option>
+      <option value="Inactivo">Inactivo</option>
+    </select>
+    <br>
+
+    <button type="submit" id="btnSubmit">Agregar</button>
+  </form>
+
+  <table id="tablaProfesores">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Fecha de Ingreso</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+<script src="../JS/profesores.js"></script>
+</body>
+</html>
+

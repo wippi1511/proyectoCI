@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios</title>
+  <link rel="stylesheet" href="../CSS/usuarios.css">
+</head>
+<body>
+
+
+<div class="sidebar" id="sidebar">
+  <h4>📂 Carpeta Instruccional SIDEM</h4>
+  <a href="index.html">🏠 Inicio</a>
+  <a href="Registros%20Cursos/cursos.html">📚 Cursos</a>
+  <a href="profesores.html">👩‍🏫 Profesores</a>
+  <a href="Registros%20Alumnos/alumnos.html">👨‍🎓 Alumnos</a>
+  <a href="usuarios.html">⚙️ Configuración</a>
+</div>
+
+  <div class="content">
+    <h2 class="titulo">Gestión de Usuarios</h2>
+
+    <form id="usuarioForm">
+      <input type="hidden" id="id">
+      <div class="form-group">
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" required>
+      </div>
+      <div class="form-group">
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" required>
+      </div>
+      <div class="form-group">
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" required>
+      </div>
+      <div class="form-group">
+        <label for="rol">Rol</label>
+        <select id="rol" required>
+          <option value="">Seleccione un rol</option>
+          <option value="Profesor">Profesor</option>
+          <option value="Coordinador">Coordinador</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-primary">Registrar</button>
+    </form>
+
+    <!-- tabla -->
+    <div class="table-container">
+      <table id="tablaUsuarios">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usuariosLista"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../JS/usuarios.js"></script>
+</body>
+</html>
