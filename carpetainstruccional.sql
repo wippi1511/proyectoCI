@@ -11,6 +11,7 @@ Usuario varchar(50) not null,
 contrasena varchar(100) not null,
 foto blob,
 correo varchar(100) not null,
+estado ENUM('Activo','Inactivo','Suspendido') not null default ('Activo'),
 idrol int not null, 
 foreign key (idrol) references rol(idrol)
 );
@@ -18,10 +19,12 @@ foreign key (idrol) references rol(idrol)
 create table profesor(
 idprofesor int auto_increment primary key,
 idusuario int not null,
+dni VARCHAR(15),
 nombre varchar(50) not null,
 apellidos varchar(100) not null,
+grado_academico VARCHAR(100),
 fecha_ingreso date default (current_date()),
-estado varchar(10) not null default ('Activo'),
+telefono VARCHAR(15),
 foreign key (idusuario) references usuarios (Id)
 );
 
@@ -32,7 +35,7 @@ idusuario int not null,
 nombre varchar(50) not null,
 apellidos varchar(100) not null,
 fecha_ingreso date default (current_date()),
-estado varchar(10) not null default ('Activo'),
+telefono VARCHAR(15),
 foreign key (idusuario) references usuarios (Id)
 );
 
