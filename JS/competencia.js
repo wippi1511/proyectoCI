@@ -3,7 +3,7 @@
     let editandoId = null;
 
     const form = document.getElementById("formCompetencia");
-    const tbody = document.getElementById("tablaCompetencias");
+    const tbody = document.querySelector("#tablaCompetencias tbody");
     const btnSubmit = document.getElementById("btnSubmit");
     const inputNombre = document.getElementById("nombre");
     const inputDescripcion = document.getElementById("descripcion");
@@ -21,8 +21,8 @@
           <td>${c.nombre}</td>
           <td>${c.descripcion}</td>
           <td>
-            <button onclick="editar(${c.id})">Editar</button>
-            <button onclick="eliminar(${c.id})">Eliminar</button>
+            <button class="btn btn-warning btn-sm" onclick="editar(${c.id})">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminar(${c.id})">Eliminar</button>
           </td>
         `;
         tbody.appendChild(tr);
