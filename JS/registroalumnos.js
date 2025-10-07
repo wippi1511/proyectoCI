@@ -6,28 +6,45 @@ const tabla = document.getElementById('tablaAlumnos');
 const modalTitle = document.getElementById('modalTitle');
 const modal = new bootstrap.Modal(document.getElementById('modalAlumnos'));
 
-//solo para demostrar funcionalidad d guardado (luego se remplaza por la base de datos real)
 function guardarAlumnos() {
   localStorage.setItem('alumnos', JSON.stringify(alumnos));
 }
 
+function generarID() {
+  if (alumnos.length === 0) return 1;
+  return Math.max(...alumnos.map(a => a.idalumno)) + 1;
+}
 
 form.addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const id = document.getElementById('alumnoId').value;
-  const dni = document.getElementById('dni').value;
-  const nombres = document.getElementById('nombres').value;
-  const apellidos = document.getElementById('apellidos').value;
-  const correo = document.getElementById('correo').value;
-  const numcelular = document.getElementById('numcelular').value;
-  const carrera = document.getElementById('carrera').value;
-  const ciclo = document.getElementById('ciclo').value;
+  const id = document.getElementById('idalumno').value;
+  const nombres = document.getElementById('nombres').value.trim();
+  const apellidos = document.getElementById('apellidos').value.trim();
+  const estado = document.getElementById('estado').value;
+  let fecha = document.getElementById('fecha_inscripcion').value;
+
+  if (!fecha) {
+    const hoy = new Date();
+    fecha = hoy.toISOString().split('T')[0];
+  }
 
   if (editIndex === -1) {
-    alumnos.push({ id, dni, nombres, apellidos, correo, numcelular, carrera, ciclo });
+    alumnos.push({
+      idalumno: generarID(),
+      nombres,
+      apellidos,
+      fecha_inscripcion: fecha,
+      estado
+    });
   } else {
-    alumnos[editIndex] = { id, dni, nombres, apellidos, correo, numcelular, carrera, ciclo };
+    alumnos[editIndex] = {
+      idalumno: alumnos[editIndex].idalumno,
+      nombres,
+      apellidos,
+      fecha_inscripcion: fecha,
+      estado
+    };
     editIndex = -1;
   }
 
@@ -42,15 +59,12 @@ function mostrarAlumnos() {
   alumnos.forEach((alumno, index) => {
     tabla.innerHTML += `
       <tr>
-        <td data-label="ID">${alumno.id}</td>
-        <td data-label="DNI">${alumno.dni}</td>
-        <td data-label="Nombres">${alumno.nombres}</td>
-        <td data-label="Apellidos">${alumno.apellidos}</td>
-        <td data-label="Correo">${alumno.correo}</td>
-        <td data-label="Num. Celular">${alumno.numcelular}</td>
-        <td data-label="Carrera">${alumno.carrera}</td>
-        <td data-label="Ciclo">${alumno.ciclo}</td>
-        <td data-label="Acciones">
+        <td>${alumno.idalumno}</td>
+        <td>${alumno.nombres}</td>
+        <td>${alumno.apellidos}</td>
+        <td>${alumno.fecha_inscripcion}</td>
+        <td>${alumno.estado}</td>
+        <td>
           <button class="btn btn-sm btn-warning" onclick="editarAlumno(${index})">Editar</button>
           <button class="btn btn-sm btn-danger" onclick="eliminarAlumno(${index})">Eliminar</button>
         </td>
@@ -61,16 +75,14 @@ function mostrarAlumnos() {
 
 function editarAlumno(index) {
   const alumno = alumnos[index];
-  document.getElementById('alumnoId').value = alumno.id;
-  document.getElementById('dni').value = alumno.dni;
+  document.getElementById('idalumno').value = alumno.idalumno;
   document.getElementById('nombres').value = alumno.nombres;
   document.getElementById('apellidos').value = alumno.apellidos;
-  document.getElementById('correo').value = alumno.correo;
-  document.getElementById('numcelular').value = alumno.numcelular;
-  document.getElementById('carrera').value = alumno.carrera;
-  document.getElementById('ciclo').value = alumno.ciclo;
+  document.getElementById('fecha_inscripcion').value = alumno.fecha_inscripcion;
+  document.getElementById('estado').value = alumno.estado;
   editIndex = index;
   modalTitle.textContent = "Editar Alumno";
+  document.getElementById('idField').style.display = 'block';
   modal.show();
 }
 
@@ -84,10 +96,12 @@ document.getElementById('modalAlumnos').addEventListener('hidden.bs.modal', () =
   modalTitle.textContent = "Registrar Alumno";
   form.reset();
   editIndex = -1;
+  document.getElementById('idField').style.display = 'none';
 });
 
 mostrarAlumnos();
 
+// Sidebar responsive
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const toggleBtn = document.querySelector(".menu-toggle");

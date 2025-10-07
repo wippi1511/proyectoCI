@@ -11,19 +11,18 @@
 </head>
 <body>
 
-  <!-- boton para ver el menu -->
+  <!-- botón para ver el menú -->
   <button class="menu-toggle btn btn-primary">☰</button>
 
   <!-- sidebar -->
-<div class="sidebar" id="sidebar">
-  <h4>📂 Carpeta Instruccional SIDEM</h4>
-  <a href="../index.html">🏠 Inicio</a>
-  <a href="cursos.html">📚 Cursos</a>
-  <a href="../profesores.html">👩‍🏫 Profesores</a>
-  <a href="../Registros%20Alumnos/alumnos.html">👨‍🎓 Alumnos</a>
-  <a href="../usuarios.html">⚙️ Configuración</a>
-</div>
-
+  <div class="sidebar" id="sidebar">
+    <h4>📂 Carpeta Instruccional SIDEM</h4>
+    <a href="../index.html">🏠 Inicio</a>
+    <a href="cursos.html" class="active">📚 Cursos</a>
+    <a href="../profesores.html">👩‍🏫 Profesores</a>
+    <a href="../Registros%20Alumnos/alumnos.html">👨‍🎓 Alumnos</a>
+    <a href="../usuarios.html">⚙️ Configuración</a>
+  </div>
 
   <!-- overlay -->
   <div class="overlay" id="overlay"></div>
@@ -39,10 +38,10 @@
       <table class="table table-striped align-middle text-center">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Nombre</th>
-            <th>Código</th>
-            <th>Profesor</th>
-            <th>Horario</th>
+            <th>Duración</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -60,54 +59,29 @@
             <h5 class="modal-title" id="modalTitle">Agregar Curso</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
+
           <div class="modal-body">
+            <input type="hidden" id="idcurso">
+
             <div class="mb-3">
               <label for="nombre" class="form-label">Nombre del Curso</label>
               <input type="text" class="form-control" id="nombre" required>
             </div>
+
             <div class="mb-3">
-              <label for="codigo" class="form-label">Código</label>
-              <input type="text" class="form-control" id="codigo" required>
-            </div>
-            <div class="mb-3">
-              <label for="profesor" class="form-label">Profesor</label>
-              <input type="text" class="form-control" id="profesor" required>
+              <label for="duracion" class="form-label">Duración</label>
+              <input type="text" class="form-control" id="duracion" placeholder="Ejemplo: 6 meses" required>
             </div>
 
-            <!-- --- HORARIO: selector + opción "Otro..." --- -->
             <div class="mb-3">
-              <label class="form-label">Horario</label>
-              <select id="horarioSelect" class="form-select" required>
-                <option value="" disabled selected>Selecciona un horario</option>
-                <option>7:00 am – 10:00 am</option>
-                <option>8:00 am – 11:00 am</option>
-                <option>9:00 am – 12:00 pm</option>
-                <option>2:00 pm – 5:00 pm</option>
-                <option>6:00 pm – 9:00 pm</option>
-                <option value="otro">Otro…</option>
+              <label for="estado" class="form-label">Estado</label>
+              <select id="estado" class="form-select">
+                <option value="Activo" selected>Activo</option>
+                <option value="Inactivo">Inactivo</option>
               </select>
-
-              <!-- Este hidden mantiene la compatibilidad con tu app.js (id=horario) -->
-              <input type="hidden" id="horario" name="horario">
             </div>
-
-            <!-- Campos que aparecen si eliges "Otro..." -->
-            <div id="horarioOtroGroup" class="mb-3 d-none">
-              <div class="row g-2">
-                <div class="col">
-                  <label for="horaInicio" class="form-label">Inicio</label>
-                  <input type="time" id="horaInicio" class="form-control" step="1800">
-                </div>
-                <div class="col">
-                  <label for="horaFin" class="form-label">Fin</label>
-                  <input type="time" id="horaFin" class="form-control" step="1800">
-                </div>
-              </div>
-              <small class="text-muted">Se guardará como “hh:mm am/pm – hh:mm am/pm”.</small>
-            </div>
-            <!-- --- /HORARIO --- -->
-
           </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -116,7 +90,6 @@
       </div>
     </div>
   </div>
-
 
   <script src="../JS/cursos.js"></script>
 </body>
