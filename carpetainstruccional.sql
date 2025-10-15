@@ -1,3 +1,4 @@
+
 create database carpeta_instruccional;
 use carpeta_instruccional;
 create table rol (
@@ -74,13 +75,17 @@ create table aula(
 id int auto_increment primary key,
 horario varchar(50) not null,
 idprofesor int not null,
-idalumno int not null,
 idcurso int not null,
 foreign key (idprofesor) references profesor(idprofesor) ,
-foreign key (idalumno) references alumnos(idalumno) ,
 foreign key (idcurso) references cursos(idcurso) 
 );
-
+create table aula_alumnos(
+    id int auto_increment primary key,
+    idaula int not null,
+    idalumno int not null,
+    foreign key (idaula) references aula(id),
+    foreign key (idalumno) references alumnos(idalumno)
+);
 create table fichas(
 id int auto_increment primary key,
 nombre_archivo varchar(100),
