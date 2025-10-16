@@ -1,44 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de aulas</title>
-    <link rel="stylesheet" href="aulas.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Aulas</title>
+  <link rel="stylesheet" href="../CSS/aula.css" />
 </head>
 <body>
-    <h1>Gestion de aulas</h1>
-    <section id="form-section">
-    <h2>Registrar aula</h2>
+  <div class="container">
+    <h1>Gestión de Aulas</h1>
+
+   
     <form id="aulaForm">
-        <label >Horario</label>
-        <input type="date" id="horario">
-        <label >Profesor:</label>
-        <select id="profesorSelect" required>
-            <option value="">Seleccione un profesor</option>
-        </select>
-        <label>Curso</label>
-        <select id="cursoSelect">
-            <option value="">Seleccione un curso</option>
-        </select>
-        <button type="submit">Guardar aula</button>
+      <label>Horario:</label>
+      <input type="text" id="horario" required />
+
+      <label>Profesor:</label>
+      <select id="profesor" required></select>
+
+      <label>Curso:</label>
+      <select id="curso" required></select>
+
+      <label>Alumnos (mínimo 15):</label>
+      <div id="alumnosContainer"></div>
+
+      <button type="submit">Guardar Aula</button>
     </form>
-    </section>
-    <section id="list-section">
-        <h2>Lista de aulas</h2>
-        <table>
-            <thead>
-                <tr>
-                    <td>ID</td>
-                    <td>Horario</td>
-                    <td>Profesor</td>
-                    <td>Curso</td>
-                    <td>Acciones</td>
-                </tr>
-            </thead>
-            <tbody id="aulasTableBody"></tbody>
-        </table>
-    </section>
-    <script src="../JS/aula.js"></script>
+
+    <hr />
+
+    <h2>Listado de Aulas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Horario</th>
+          <th>Profesor</th>
+          <th>Curso</th>
+          <th>Alumnos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaAulas"></tbody>
+    </table>
+  </div>
+
+  <script src="../JS/aula.js"></script>
 </body>
 </html>

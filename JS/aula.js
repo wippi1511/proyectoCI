@@ -1,119 +1,106 @@
-const API_AULAS = "http://localhost:8080/api/aulas";
+const API_URL = "http://localhost:8080/api/aulas";
 const API_PROFESORES = "http://localhost:8080/api/profesores/activos";
 const API_CURSOS = "http://localhost:8080/api/cursos/activos";
-
-document.addEventListener("DOMContentLoaded", () => {
-    cargarAulas();
-    cargarProfesores();
-    cargarCursos();
-});
+const API_ALUMNOS = "http://localhost:8080/api/alumnos/activos";
 
 const form = document.getElementById("aulaForm");
-const tbody = document.getElementById("aulasTableBody");
-const selectProfesor = document.getElementById("profesorSelect");
-const selectCurso = document.getElementById("cursoSelect");
+const horario = document.getElementById("horario");
+const profesorSelect = document.getElementById("profesor");
+const cursoSelect = document.getElementById("curso");
+const alumnosContainer = document.getElementById("alumnosContainer");
+const tablaAulas = document.getElementById("tablaAulas");
 
-//  Cargar lista de aulas
-async function cargarAulas() {
-    tbody.innerHTML = "";
-    try {
-        const res = await fetch(API_AULAS);
-        const aulas = await res.json();
-        aulas.forEach(aula => agregarFila(aula));
-    } catch (error) {
-        console.error("Error cargando aulas:", error);
-    }
-}
-
-//  Mostrar aulas en tabla
-function agregarFila(aula) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-        <td>${aula.id}</td>
-        <td>${aula.horario}</td>
-        <td>${aula.profesor?.nombre || "Sin nombre"}</td>
-        <td>${aula.curso?.nombre || "Sin nombre"}</td>
-        <td>
-            <button onclick="eliminarAula(${aula.id})"> Eliminar</button>
-        </td>
-    `;
-    tbody.appendChild(tr);
-}
-
-//  Cargar profesores activos
-async function cargarProfesores() {
-    try {
-        const res = await fetch(API_PROFESORES);
-        const profesores = await res.json();
-
-        profesores.forEach(p => {
-            const option = document.createElement("option");
-            option.value = p.idprofesor;
-            option.textContent = `${p.nombre} ${p.apellidos}`;
-            selectProfesor.appendChild(option);
-        });
-    } catch (error) {
-        console.error("Error cargando profesores:", error);
-    }
-}
-
-//  Cargar cursos activos
-async function cargarCursos() {
-    try {
-        const res = await fetch(API_CURSOS);
-        const cursos = await res.json();
-
-        cursos.forEach(c => {
-            const option = document.createElement("option");
-            option.value = c.idcurso;
-            option.textContent = c.nombre;
-            selectCurso.appendChild(option);
-        });
-    } catch (error) {
-        console.error("Error cargando cursos:", error);
-    }
-}
-
-//  Crear nueva aula
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nuevaAula = {
-        horario: document.getElementById("horario").value,
-        idprofesor: parseInt(selectProfesor.value),
-        idcurso: parseInt(selectCurso.value)
-    };
-
-    try {
-        const res = await fetch(API_AULAS, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(nuevaAula)
-        });
-
-        if (res.ok) {
-            alert("Aula registrada con éxito ");
-            form.reset();
-            cargarAulas();
-        } else {
-            alert("Error al registrar aula ");
-        }
-    } catch (error) {
-        console.error("Error al guardar aula:", error);
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  cargarProfesores();
+  cargarCursos();
+  cargarAlumnos();
+  listarAulas();
 });
 
-//  Eliminar aula
+async function cargarProfesores() {
+  const res = await fetch(API_PROFESORES);
+  const data = await res.json();
+  profesorSelect.innerHTML = data
+    .filter(p => p.usuario.estado === "Activo")
+    .map(p => `<option value="${p.idprofesor}">${p.nombre} ${p.apellidos}</option>`)
+    .join("");
+}
+
+async function cargarCursos() {
+  const res = await fetch(API_CURSOS);
+  const data = await res.json();
+  cursoSelect.innerHTML = data
+    .filter(c => c.estado === "Activo")
+    .map(c => `<option value="${c.idcurso}">${c.nombre}</option>`)
+    .join("");
+}
+
+async function cargarAlumnos() {
+  const res = await fetch(API_ALUMNOS);
+  const data = await res.json();
+  alumnosContainer.innerHTML = data
+    .filter(a => a.estado === "Activo")
+    .map(a => `
+      <label>
+        <input type="checkbox" value="${a.idalumno}" />
+        ${a.nombres} ${a.apellidos}
+      </label>
+    `)
+    .join("<br>");
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const seleccionados = [...alumnosContainer.querySelectorAll("input:checked")].map(c => parseInt(c.value));
+
+  if (seleccionados.length < 15) {
+    alert("Debes seleccionar al menos 15 alumnos.");
+    return;
+  }
+
+  const aula = {
+    horario: horario.value,
+    idProfesor: parseInt(profesorSelect.value),
+    idCurso: parseInt(cursoSelect.value),
+    idsAlumnos: seleccionados
+  };
+
+  const res = await fetch(`${API_URL}/crear`, {
+    
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(aula)
+  });
+
+    if (res.ok) {
+    alert("Aula creada correctamente");
+    form.reset();
+    listarAulas();
+  } else {
+    const error = await res.text();
+    console.error("Error al crear aula:", error);
+    alert("Error al crear el aula");
+  }
+});
+
+async function listarAulas() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+  tablaAulas.innerHTML = data.map(a => `
+    <tr>
+      <td>${a.idaula}</td>
+      <td>${a.horario}</td>
+      <td>${a.profesor.nombre} ${a.profesor.apellidos}</td>
+      <td>${a.curso.nombre}</td>
+      <td>${a.alumnos.length}</td>
+      <td><button onclick="eliminarAula(${a.idaula})">Eliminar</button></td>
+    </tr>
+  `).join("");
+}
+
 async function eliminarAula(id) {
-    if (!confirm("¿Seguro que deseas eliminar esta aula?")) return;
-    try {
-        const res = await fetch(`${API_AULAS}/${id}`, { method: "DELETE" });
-        if (res.ok) {
-            cargarAulas();
-        } else {
-            alert("Error al eliminar aula ");
-        }
-    } catch (error) {
-        console.error("Error eliminando aula:", error);
-    }
+  if (!confirm("¿Seguro que deseas eliminar esta aula?")) return;
+  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  listarAulas();
 }
