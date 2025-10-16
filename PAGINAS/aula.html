@@ -1,49 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Aulas</title>
-  <link rel="stylesheet" href="../CSS/aula.css" />
+  <link rel="stylesheet" href="../CSS/aula.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Gestión de Aulas</h1>
+  <h1>Gestión de Aulas</h1>
 
-   
-    <form id="aulaForm">
-      <label>Horario:</label>
-      <input type="text" id="horario" required />
+  <form id="aulaForm">
+    <label>Horario:</label>
+    <input type="text" id="horario" required><br><br>
 
-      <label>Profesor:</label>
-      <select id="profesor" required></select>
+    <label>Profesor:</label>
+    <select id="profesorSelect" required></select><br><br>
 
-      <label>Curso:</label>
-      <select id="curso" required></select>
+    <label>Curso:</label>
+    <select id="cursoSelect" required></select><br><br>
 
-      <label>Alumnos (mínimo 15):</label>
-      <div id="alumnosContainer"></div>
+    <div class="buscador">
+      <input type="text" id="buscarAlumno" placeholder="Buscar alumno por nombre...">
+    </div>
 
-      <button type="submit">Guardar Aula</button>
-    </form>
+    <div id="contadorSeleccion">Seleccionados: 0 </div>
+    <div id="alumnosContainer" class="alumnos"></div>
+    <div id="paginacion" class="paginacion"></div>
 
-    <hr />
-
+    <br>
+    <button type="submit">Crear Aula</button>
+    <br>
+    <section id="listadoAulas">
     <h2>Listado de Aulas</h2>
-    <table>
+    <table id="tablaAulas">
       <thead>
         <tr>
           <th>ID</th>
           <th>Horario</th>
           <th>Profesor</th>
           <th>Curso</th>
-          <th>Alumnos</th>
-          <th>Acciones</th>
+          <th>Cantidad de alumnos</th>
         </tr>
       </thead>
-      <tbody id="tablaAulas"></tbody>
+      <tbody></tbody>
     </table>
-  </div>
+  </section>
+  </form>
+
+  <div id="aulasList"></div>
 
   <script src="../JS/aula.js"></script>
 </body>

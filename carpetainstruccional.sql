@@ -110,6 +110,3 @@ foreign key (idprofesor) references profesor(idprofesor),
 foreign key (idcurso) references cursos(idcurso)
 );
 
-
-
-
