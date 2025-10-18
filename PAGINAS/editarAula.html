@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Aula</title>
+  <link rel="stylesheet" href="../CSS/editarAula.css">
+</head>
+<body>
+  <h1>Editar Aula</h1>
+
+  <form id="editarForm">
+    <label>Horario:</label>
+    <input type="text" id="horario" required><br><br>
+
+    <label>Profesor:</label>
+    <select id="profesorSelect" required></select><br><br>
+
+    <label>Curso:</label>
+    <select id="cursoSelect" required></select><br><br>
+
+    <div class="buscador">
+      <input type="text" id="buscarAlumno" placeholder="Buscar alumno por nombre...">
+    </div>
+
+    <div id="contadorSeleccion">Seleccionados: 0</div>
+
+    <div id="alumnosContainer" class="alumnos"></div>
+    <div id="paginacion" class="paginacion"></div>
+
+    <br>
+    <button type="submit">Guardar Cambios</button>
+    <button type="button" id="volverBtn">Cancelar</button>
+  </form>
+
+  <script src="../JS/editarAula.js"></script>
+</body>
+</html>

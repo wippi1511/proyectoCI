@@ -122,3 +122,13 @@ button:hover {
   background-color: #007bff;
   color: white;
 }
+.detalle-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+

@@ -83,7 +83,7 @@ function mostrarAlumnos() {
   });
 
   renderPaginacion();
-  actualizarContador(); // refresca el contador
+  actualizarContador(); 
 }
 
 
@@ -158,21 +158,71 @@ async function listarAulas() {
   if (!res.ok) return;
   const aulas = await res.json();
 
+  const tablaAulas = document.getElementById("aulasBody");
   tablaAulas.innerHTML = "";
 
   aulas.forEach(a => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${a.id || a.idaula || ""}</td>
+      <td>${a.idaula || a.id}</td>
       <td>${a.horario}</td>
       <td>${a.profesor?.nombre || ""} ${a.profesor?.apellidos || ""}</td>
       <td>${a.curso?.nombre || ""}</td>
       <td>${a.alumnos?.length || 0}</td>
+      <td>
+        <button type="button" class="detalles-btn" data-id="${a.idaula || a.id}">Ver</button>
+        <button type="button" class="editar-btn" data-id="${a.idaula || a.id}">Editar</button>
+        <button class="eliminar-btn" data-id="${a.idaula}">Eliminar</button>
+      </td>
     `;
     tablaAulas.appendChild(tr);
+    document.querySelectorAll(".eliminar-btn").forEach(btn =>
+    btn.addEventListener("click", () => eliminarAula(btn.dataset.id))
+  );
+  });
+
+ 
+  agregarEventosVer();
+}
+function agregarEventosVer() {
+  const botonesVer = document.querySelectorAll(".detalles-btn");
+  const botonesEditar = document.querySelectorAll(".editar-btn");
+  botonesVer.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const id = e.target.dataset.id;
+      if (!id) {
+        console.error("No se encontró el ID del aula");
+        return;
+      }
+      window.location.href = `detallesAula.html?id=${id}`;
+    });
+  });
+  botonesEditar.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const id = e.target.dataset.id;
+      if (!id) {
+        console.error("No se encontró el ID del aula");
+        return;
+      }
+      window.location.href = `editarAula.html?id=${id}`;
+    });
   });
 }
+async function eliminarAula(id) {
+  const confirmar = confirm("¿Estás seguro de eliminar este aula?");
+  if (!confirmar) return;
 
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
+  });
+
+  if (res.ok) {
+    alert("Aula eliminada correctamente");
+    listarAulas();
+  } else {
+    alert("Error al eliminar el aula");
+  }
+}
 
 
 cargarDatos();
