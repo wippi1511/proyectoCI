@@ -73,12 +73,21 @@ estado varchar(10) default ('Activo')
 
 create table aula(
 id int auto_increment primary key,
-horario varchar(50) not null,
 idprofesor int not null,
 idcurso int not null,
 foreign key (idprofesor) references profesor(idprofesor) ,
 foreign key (idcurso) references cursos(idcurso) 
 );
+
+CREATE TABLE aula_dias (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  idaula INT NOT NULL,
+  dia ENUM('Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo') NOT NULL,
+  hora_inicio TIME NOT NULL,
+  hora_fin TIME NOT NULL,
+  FOREIGN KEY (idaula) REFERENCES aula(id) ON DELETE CASCADE
+);
+
 create table aula_alumnos(
     id int auto_increment primary key,
     idaula int not null,
@@ -86,6 +95,7 @@ create table aula_alumnos(
     foreign key (idaula) references aula(id),
     foreign key (idalumno) references alumnos(idalumno)
 );
+
 create table fichas(
 id int auto_increment primary key,
 nombre_archivo varchar(100),
