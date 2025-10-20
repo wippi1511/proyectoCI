@@ -9,14 +9,20 @@
   <h1>Editar Aula</h1>
 
   <form id="editarForm">
-    <label>Horario:</label>
-    <input type="text" id="horario" required><br><br>
 
     <label>Profesor:</label>
     <select id="profesorSelect" required></select><br><br>
 
     <label>Curso:</label>
     <select id="cursoSelect" required></select><br><br>
+
+    <!-- 🔹 Nueva sección de días y horarios -->
+    <div class="campo">
+      <label>Días y Horarios:</label>
+      <div id="diasContainer"></div>
+      <button type="button" id="agregarDiaBtn">+ Agregar día</button>
+    </div>
+    <br>
 
     <div class="buscador">
       <input type="text" id="buscarAlumno" placeholder="Buscar alumno por nombre...">

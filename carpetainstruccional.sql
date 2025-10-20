@@ -110,3 +110,61 @@ foreign key (idprofesor) references profesor(idprofesor),
 foreign key (idcurso) references cursos(idcurso)
 );
 
+CREATE TABLE historial_cursos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  idaula INT NOT NULL,
+  idprofesor INT NOT NULL,
+  idcurso INT NOT NULL,
+  estado ENUM('Activo','Completado','Eliminado') DEFAULT 'Activo',
+  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+create table material_apoyo(
+id int auto_increment primary key,
+nombre_archivo varchar(100),
+tipo_archivo varchar(100),
+ruta_archivo varchar(100),
+fecha_subida date default (current_date()),
+idcurso int not null,
+idprofesor int not null,
+foreign key (idprofesor) references profesor(idprofesor),
+foreign key (idcurso) references cursos(idcurso)
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_insert_historial_cursos
+AFTER INSERT ON aula
+FOR EACH ROW
+BEGIN
+  INSERT INTO historial_cursos (idaula, idprofesor, idcurso, estado)
+  VALUES (NEW.id, NEW.idprofesor, NEW.idcurso, 'Activo');
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_update_historial_cursos
+AFTER UPDATE ON aula
+FOR EACH ROW
+BEGIN
+  IF (OLD.idprofesor <> NEW.idprofesor OR OLD.idcurso <> NEW.idcurso) THEN
+    INSERT INTO historial_cursos (idaula, idprofesor, idcurso, estado)
+    VALUES (NEW.id, NEW.idprofesor, NEW.idcurso, 'Activo');
+  END IF;
+END $$
+
+DELIMITER $$
+CREATE TRIGGER trg_delete_historial_cursos
+AFTER DELETE ON aula
+FOR EACH ROW
+BEGIN
+  INSERT INTO historial_cursos (idaula, idprofesor, idcurso, estado)
+  VALUES (OLD.id, OLD.idprofesor, OLD.idcurso, 'Eliminado');
+END $$
+
+DELIMITER ;
+
+

@@ -4,7 +4,6 @@ const API_CURSOS = "http://localhost:8080/api/cursos/activos";
 const API_ALUMNOS = "http://localhost:8080/api/alumnos/activos";
 
 const form = document.getElementById("editarForm");
-const horario = document.getElementById("horario");
 const profesorSelect = document.getElementById("profesorSelect");
 const cursoSelect = document.getElementById("cursoSelect");
 const alumnosContainer = document.getElementById("alumnosContainer");
@@ -13,8 +12,12 @@ const paginacionDiv = document.getElementById("paginacion");
 const contadorSeleccion = document.getElementById("contadorSeleccion");
 const volverBtn = document.getElementById("volverBtn");
 
+const diasContainer = document.getElementById("diasContainer");
+const agregarDiaBtn = document.getElementById("agregarDiaBtn");
+
 const urlParams = new URLSearchParams(window.location.search);
 const idAula = urlParams.get("id");
+console.log("🟢 idAula obtenido:", idAula);
 
 let alumnos = [];
 let alumnosFiltrados = [];
@@ -22,7 +25,7 @@ let seleccionadosGlobal = new Set();
 let paginaActual = 1;
 const alumnosPorPagina = 10;
 
-// 🟦 Cargar combos
+// 🟦 Cargar selects
 async function cargarSelect(url, select, texto) {
   const res = await fetch(url);
   const data = await res.json();
@@ -49,11 +52,18 @@ async function cargarAula() {
   }
   const aula = await res.json();
 
-  horario.value = aula.horario;
   profesorSelect.value = aula.profesor?.idprofesor || "";
   cursoSelect.value = aula.curso?.idcurso || "";
   seleccionadosGlobal = new Set(aula.alumnos.map(a => a.idalumno));
   actualizarContador();
+
+  // Cargar días y horarios
+  diasContainer.innerHTML = "";
+  if (aula.dias && aula.dias.length > 0) {
+    aula.dias.forEach(d => agregarFilaDia(d.dia, d.horaInicio, d.horaFin));
+  } else {
+    agregarFilaDia(); // mínimo una fila
+  }
 }
 
 // 🟦 Cargar alumnos y mostrar con paginación
@@ -129,6 +139,32 @@ function actualizarContador() {
   contadorSeleccion.textContent = `Seleccionados: ${seleccionadosGlobal.size}`;
 }
 
+// 🟦 Crear fila para día y horario
+function agregarFilaDia(dia = "", horaInicio = "", horaFin = "") {
+  const fila = document.createElement("div");
+  fila.classList.add("fila-dia");
+  fila.innerHTML = `
+    <select class="dia-select">
+      <option value="">Seleccione día</option>
+      <option value="Lunes" ${dia === "Lunes" ? "selected" : ""}>Lunes</option>
+      <option value="Martes" ${dia === "Martes" ? "selected" : ""}>Martes</option>
+      <option value="Miércoles" ${dia === "Miércoles" ? "selected" : ""}>Miércoles</option>
+      <option value="Jueves" ${dia === "Jueves" ? "selected" : ""}>Jueves</option>
+      <option value="Viernes" ${dia === "Viernes" ? "selected" : ""}>Viernes</option>
+      <option value="Sábado" ${dia === "Sábado" ? "selected" : ""}>Sábado</option>
+    </select>
+    <input type="time" class="hora-inicio" value="${horaInicio || ""}">
+    <input type="time" class="hora-fin" value="${horaFin || ""}">
+    <button type="button" class="eliminarDiaBtn">🗑️</button>
+  `;
+
+  fila.querySelector(".eliminarDiaBtn").addEventListener("click", () => fila.remove());
+  diasContainer.appendChild(fila);
+}
+
+// Botón agregar día
+agregarDiaBtn.addEventListener("click", () => agregarFilaDia());
+
 // 🟦 Guardar cambios
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -139,10 +175,16 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  const dias = Array.from(diasContainer.querySelectorAll(".fila-dia")).map(f => ({
+    dia: f.querySelector(".dia-select").value,
+    horaInicio: f.querySelector(".hora-inicio").value,
+    horaFin: f.querySelector(".hora-fin").value
+  })).filter(d => d.dia);
+
   const datos = {
-    horario: horario.value,
-    idProfesor: parseInt(profesorSelect.value),
-    idCurso: parseInt(cursoSelect.value),
+    profesor: { idprofesor: parseInt(profesorSelect.value) },
+    curso: { idcurso: parseInt(cursoSelect.value) },
+    dias,
     idsAlumnos: seleccionados
   };
 

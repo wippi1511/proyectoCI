@@ -16,16 +16,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const aula = await res.json();
 
-    
+    // Mostrar información principal
     document.getElementById("aulaId").textContent = aula.idaula || aula.id || "-";
-    document.getElementById("aulaHorario").textContent = aula.horario || "-";
     document.getElementById("aulaProfesor").textContent =
       aula.profesor
         ? `${aula.profesor.nombre || ""} ${aula.profesor.apellidos || ""}`.trim()
         : "-";
     document.getElementById("aulaCurso").textContent = aula.curso?.nombre || "-";
 
-    
+    // === Mostrar los días y horarios ===
+    const listaDias = document.getElementById("aulaDias");
+    listaDias.innerHTML = "";
+
+    if (aula.dias && aula.dias.length > 0) {
+      aula.dias.forEach(d => {
+        const li = document.createElement("li");
+
+        // Tolerar distintos nombres de propiedad
+        const dia = d.dia || d.diaSemana || d.dia_semana || "Día no especificado";
+        const hi = d.horaInicio || d.hora_inicio || "";
+        const hf = d.horaFin || d.hora_fin || "";
+
+        li.textContent = `${dia}: ${hi}${hi && hf ? " - " : ""}${hf}`;
+        listaDias.appendChild(li);
+      });
+    } else {
+      const li = document.createElement("li");
+      li.textContent = "Sin horarios registrados";
+      listaDias.appendChild(li);
+    }
+
+    // === Lista de alumnos ===
     const tbody = document.getElementById("alumnosBody");
     tbody.innerHTML = "";
 

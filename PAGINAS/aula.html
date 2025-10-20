@@ -10,9 +10,11 @@
   <h1>Gestión de Aulas</h1>
 
   <form id="aulaForm">
-    <label>Horario:</label>
-    <input type="text" id="horario" required><br><br>
+    <h3>Horario de clases</h3>
+    <div id="diasContainer"></div>
+    <button type="button" id="agregarDiaBtn">+ Añadir día</button>
 
+    <br><br>
     <label>Profesor:</label>
     <select id="profesorSelect" required></select><br><br>
 
@@ -23,21 +25,22 @@
       <input type="text" id="buscarAlumno" placeholder="Buscar alumno por nombre...">
     </div>
 
-    <div id="contadorSeleccion">Seleccionados: 0 </div>
+    <div id="contadorSeleccion">Seleccionados: 0</div>
     <div id="alumnosContainer" class="alumnos"></div>
     <div id="paginacion" class="paginacion"></div>
 
     <br>
     <button type="submit">Crear Aula</button>
-      </form>
-    <br>
-    <section id="listadoAulas">
+  </form>
+
+  <br>
+  <section id="listadoAulas">
     <h2>Listado de Aulas</h2>
     <table id="tablaAulas">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Horario</th>
+          <th>Días</th>
           <th>Profesor</th>
           <th>Curso</th>
           <th>Cantidad de alumnos</th>
@@ -48,6 +51,7 @@
     </table>
   </section>
 
+  <a href="index.html">Volver al inicio</a>
 
   <div id="aulasList"></div>
 
