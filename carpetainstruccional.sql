@@ -120,14 +120,18 @@ foreign key (idprofesor) references profesor(idprofesor),
 foreign key (idcurso) references cursos(idcurso)
 );
 
-CREATE TABLE historial_cursos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  idaula INT NOT NULL,
-  idprofesor INT NOT NULL,
-  idcurso INT NOT NULL,
-  estado ENUM('Activo','Completado','Eliminado') DEFAULT 'Activo',
-  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE historial (
+  idhistorial INT AUTO_INCREMENT PRIMARY KEY,
+  tipo_operacion VARCHAR(10) NOT NULL, 
+  fecha_operacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  idaula INT,
+  profesor_nombre VARCHAR(100),
+  curso_nombre VARCHAR(100),
+  dias TEXT,
+  cantidad_alumnos INT,
+  FOREIGN KEY (idaula) REFERENCES aula(id)
 );
+
 
 create table material_apoyo(
 id int auto_increment primary key,
@@ -137,6 +141,7 @@ ruta_archivo varchar(100),
 fecha_subida date default (current_date()),
 idcurso int not null,
 idprofesor int not null,
+estado enum('Aceptado','Rechazado','Pendiente') default 'Pendiente',
 foreign key (idprofesor) references profesor(idprofesor),
 foreign key (idcurso) references cursos(idcurso)
 );
@@ -144,37 +149,114 @@ foreign key (idcurso) references cursos(idcurso)
 
 DELIMITER $$
 
-CREATE TRIGGER trg_insert_historial_cursos
+CREATE TRIGGER aula_insert
 AFTER INSERT ON aula
 FOR EACH ROW
 BEGIN
-  INSERT INTO historial_cursos (idaula, idprofesor, idcurso, estado)
-  VALUES (NEW.id, NEW.idprofesor, NEW.idcurso, 'Activo');
-END $$
+    DECLARE v_profesor_nombre VARCHAR(100);
+    DECLARE v_curso_nombre VARCHAR(100);
+    DECLARE v_dias TEXT;
+    DECLARE v_cantidad_alumnos INT;
+    
+    SELECT CONCAT(nombre, ' ', apellidos)
+    INTO v_profesor_nombre
+    FROM profesor
+    WHERE idprofesor = NEW.idprofesor;
+    
+    SELECT nombre
+    INTO v_curso_nombre
+    FROM cursos
+    WHERE idcurso = NEW.idcurso;
+    
+    SELECT GROUP_CONCAT(CONCAT(dia, ' (', hora_inicio, '-', hora_fin, ')') SEPARATOR ', ')
+    INTO v_dias
+    FROM aula_dias
+    WHERE idaula = NEW.id;
+
+    
+    SELECT COUNT(*)
+    INTO v_cantidad_alumnos
+    FROM aula_alumnos
+    WHERE idaula = NEW.id;
+
+    
+    INSERT INTO historial (tipo_operacion, idaula, profesor_nombre, curso_nombre, dias, cantidad_alumnos)
+    VALUES ('INSERT', NEW.id, v_profesor_nombre, v_curso_nombre, v_dias, v_cantidad_alumnos);
+END$$
 
 DELIMITER ;
 
 DELIMITER $$
 
-CREATE TRIGGER trg_update_historial_cursos
+CREATE TRIGGER aula_update
 AFTER UPDATE ON aula
 FOR EACH ROW
 BEGIN
-  IF (OLD.idprofesor <> NEW.idprofesor OR OLD.idcurso <> NEW.idcurso) THEN
-    INSERT INTO historial_cursos (idaula, idprofesor, idcurso, estado)
-    VALUES (NEW.id, NEW.idprofesor, NEW.idcurso, 'Activo');
-  END IF;
-END $$
+    DECLARE v_profesor_nombre VARCHAR(100);
+    DECLARE v_curso_nombre VARCHAR(100);
+    DECLARE v_dias TEXT;
+    DECLARE v_cantidad_alumnos INT;
 
-DELIMITER $$
-CREATE TRIGGER trg_delete_historial_cursos
-AFTER DELETE ON aula
-FOR EACH ROW
-BEGIN
-  INSERT INTO historial_cursos (idaula, idprofesor, idcurso, estado)
-  VALUES (OLD.id, OLD.idprofesor, OLD.idcurso, 'Eliminado');
-END $$
+    SELECT CONCAT(nombre, ' ', apellidos)
+    INTO v_profesor_nombre
+    FROM profesor
+    WHERE idprofesor = NEW.idprofesor;
+
+    SELECT nombre
+    INTO v_curso_nombre
+    FROM cursos
+    WHERE idcurso = NEW.idcurso;
+
+    SELECT GROUP_CONCAT(CONCAT(dia, ' (', hora_inicio, '-', hora_fin, ')') SEPARATOR ', ')
+    INTO v_dias
+    FROM aula_dias
+    WHERE idaula = NEW.id;
+
+    SELECT COUNT(*)
+    INTO v_cantidad_alumnos
+    FROM aula_alumnos
+    WHERE idaula = NEW.id;
+
+    INSERT INTO historial (tipo_operacion, idaula, profesor_nombre, curso_nombre, dias, cantidad_alumnos)
+    VALUES ('UPDATE', NEW.id, v_profesor_nombre, v_curso_nombre, v_dias, v_cantidad_alumnos);
+END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE TRIGGER aula_delete
+AFTER DELETE ON aula
+FOR EACH ROW
+BEGIN
+    DECLARE v_profesor_nombre VARCHAR(100);
+    DECLARE v_curso_nombre VARCHAR(100);
+    DECLARE v_dias TEXT;
+    DECLARE v_cantidad_alumnos INT;
+
+    SELECT CONCAT(nombre, ' ', apellidos)
+    INTO v_profesor_nombre
+    FROM profesor
+    WHERE idprofesor = OLD.idprofesor;
+
+    SELECT nombre
+    INTO v_curso_nombre
+    FROM cursos
+    WHERE idcurso = OLD.idcurso;
+
+    SELECT GROUP_CONCAT(CONCAT(dia, ' (', hora_inicio, '-', hora_fin, ')') SEPARATOR ', ')
+    INTO v_dias
+    FROM aula_dias
+    WHERE idaula = OLD.id;
+
+    SELECT COUNT(*)
+    INTO v_cantidad_alumnos
+    FROM aula_alumnos
+    WHERE idaula = OLD.id;
+
+    INSERT INTO historial (tipo_operacion, idaula, profesor_nombre, curso_nombre, dias, cantidad_alumnos)
+    VALUES ('DELETE', OLD.id, v_profesor_nombre, v_curso_nombre, v_dias, v_cantidad_alumnos);
+END$$
+
+DELIMITER ;
 
