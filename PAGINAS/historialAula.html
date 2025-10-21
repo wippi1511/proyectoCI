@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de Cambios en Aulas</title>
+  <link rel="stylesheet" href="../CSS/historialAula.css">
+</head>
+<body>
+  <h1>Historial de Cambios en Aulas</h1>
+
+  <section class="filtros">
+    <label>Tipo de operación:</label>
+    <select id="tipoFiltro">
+      <option value="">Todos</option>
+      <option value="INSERT">INSERT</option>
+      <option value="UPDATE">UPDATE</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+
+    <label>Desde:</label>
+    <input type="date" id="fechaInicio">
+
+    <label>Hasta:</label>
+    <input type="date" id="fechaFin">
+
+    <button id="btnFiltrar">Filtrar</button>
+    <button id="btnLimpiar">Limpiar</button>
+  </section>
+
+  <section id="contenedorTabla">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Aula ID</th>
+          <th>Profesor</th>
+          <th>Curso</th>
+          <th>Días</th>
+          <th>Alumnos</th>
+        </tr>
+      </thead>
+      <tbody id="historialBody"></tbody>
+    </table>
+  </section>
+
+  <br>
+  <a href="index.html">Volver al inicio</a>
+
+  <script src="../JS/historialAula.js"></script>
+</body>
+</html>
