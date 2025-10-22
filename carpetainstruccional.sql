@@ -146,6 +146,20 @@ foreign key (idprofesor) references profesor(idprofesor),
 foreign key (idcurso) references cursos(idcurso)
 );
 
+CREATE TABLE asistencia (
+    idasistencia INT AUTO_INCREMENT PRIMARY KEY,
+    idalumno INT NOT NULL,
+    idaula INT NOT NULL,
+    fecha DATE NOT NULL,
+    estado ENUM('Presente', 'Tarde', 'Ausente', 'Justificado') NOT NULL DEFAULT 'Ausente',
+    observacion VARCHAR(255),
+    FOREIGN KEY (idalumno) REFERENCES alumnos(idalumno),
+    FOREIGN KEY (idaula) REFERENCES aula(id)
+);
+
+
+
+
 
 DELIMITER $$
 
@@ -260,3 +274,68 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE TRIGGER insert_dias
+AFTER INSERT ON aula_dias
+FOR EACH ROW
+BEGIN
+    DECLARE v_dias TEXT;
+
+    SELECT GROUP_CONCAT(CONCAT(dia, ' (', hora_inicio, '-', hora_fin, ')') SEPARATOR ', ')
+    INTO v_dias
+    FROM aula_dias
+    WHERE idaula = NEW.idaula;
+
+    UPDATE historial
+    SET dias = v_dias
+    WHERE idaula = NEW.idaula
+    ORDER BY idhistorial DESC
+    LIMIT 1;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER update_dias
+AFTER UPDATE ON aula_dias
+FOR EACH ROW
+BEGIN
+    DECLARE v_dias TEXT;
+
+    SELECT GROUP_CONCAT(CONCAT(dia, ' (', hora_inicio, '-', hora_fin, ')') SEPARATOR ', ')
+    INTO v_dias
+    FROM aula_dias
+    WHERE idaula = NEW.idaula;
+
+    UPDATE historial
+    SET dias = v_dias
+    WHERE idaula = NEW.idaula
+    ORDER BY idhistorial DESC
+    LIMIT 1;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER delete_dias
+AFTER DELETE ON aula_dias
+FOR EACH ROW
+BEGIN
+    DECLARE v_dias TEXT;
+
+    SELECT GROUP_CONCAT(CONCAT(dia, ' (', hora_inicio, '-', hora_fin, ')') SEPARATOR ', ')
+    INTO v_dias
+    FROM aula_dias
+    WHERE idaula = OLD.idaula;
+
+    UPDATE historial
+    SET dias = v_dias
+    WHERE idaula = OLD.idaula
+    ORDER BY idhistorial DESC
+    LIMIT 1;
+END$$
+
+DELIMITER ;
