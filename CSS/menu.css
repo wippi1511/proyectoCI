@@ -52,6 +52,53 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
+/* ==== PANEL DE NOTIFICACIONES ==== */
+.notificaciones {
+  position: relative;
+}
+
+.notif-box {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: white;
+  width: 280px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.notif-box.show {
+  display: block;
+  animation: fadeIn 0.25s ease-in;
+}
+
+.notif-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.notif-item strong {
+  display: block;
+  font-size: 15px;
+  color: #333;
+}
+
+.notif-item small {
+  color: gray;
+  font-size: 12px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
 
 
 
