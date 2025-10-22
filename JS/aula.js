@@ -225,7 +225,7 @@ async function listarAulas() {
           <button type="button" class="detalles-btn" data-id="${a.id || a.idaula}">Ver</button>
           <button type="button" class="editar-btn" data-id="${a.id || a.idaula}">Editar</button>
           <button type="button" class="eliminar-btn" data-id="${a.id || a.idaula}">Eliminar</button>
-          <button type="button" class="historial-btn" data-id="${a.id || a.idaula}">Historial</button>
+          
         </td>
       `;
       tablaAulas.appendChild(tr);
@@ -235,8 +235,7 @@ async function listarAulas() {
     agregarEventosVer();
     asignarEventosEditar();
     asignarEventosEliminar();
-    asignarEventosAsistencias();
-    asignarEventosHistorial();
+
 
 
   } catch (err) {
@@ -278,33 +277,6 @@ function asignarEventosEliminar() {
   });
 }
 
-// === EVENTOS DE ASISTENCIAS ===
-function asignarEventosAsistencias() {
-  const botonesAsistencia = document.querySelectorAll(".asistencia-btn");
-  botonesAsistencia.forEach(btn => {
-    btn.addEventListener("click", handleAsistenciaClick);
-  });
-}
-
-function handleAsistenciaClick(e) {
-  const id = e.currentTarget.dataset.id;
-  if (!id) return alert("ID de aula no encontrado.");
-  window.location.href = `asistencia.html?id=${id}`;
-}
-
-// === EVENTOS DE HISTORIAL ===
-function asignarEventosHistorial() {
-  const botonesHistorial = document.querySelectorAll(".historial-btn");
-  botonesHistorial.forEach(btn => {
-    btn.addEventListener("click", handleHistorialClick);
-  });
-}
-
-function handleHistorialClick(e) {
-  const id = e.currentTarget.dataset.id;
-  if (!id) return alert("ID de aula no encontrado.");
-  window.location.href = `historialAsistencia.html?id=${id}`;
-}
 
 
 async function handleEliminarClick(e) {
