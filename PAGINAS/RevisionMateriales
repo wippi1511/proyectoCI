@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Revisión de Materiales - Coordinador</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .aprobado { background-color: #d1e7dd !important; } 
+    .rechazado { background-color: #f8d7da !important; } 
+  </style>
+</head>
+<body class="bg-light p-4">
+
+<div class="container">
+  <h2 class="mb-4">🧾 Revisión de Materiales</h2>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Seleccionar Curso y Responsable</h5>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <select id="cursoSelect" class="form-select" required>
+            <option value="">Seleccionar curso...</option>
+            <option value="Matemática I">Matemática I</option>
+            <option value="Comunicación">Comunicación</option>
+            <option value="Física">Física</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <select id="responsableSelect" class="form-select" required>
+            <option value="">Seleccionar responsable...</option>
+            <option value="Profesor">Profesor</option>
+            <option value="Coordinador">Coordinador</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Archivos para Revisión</h5>
+      <table class="table table-bordered text-center align-middle" id="archivosTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Archivo</th>
+            <th>Curso</th>
+            <th>Responsable</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// Datos simulados
+const archivos = [
+  { nombre: "Guía 1 - Derivadas.pdf", curso: "Matemática I", responsable: "Profesor", fecha: "2025-10-15", estado: "Pendiente", comentario: "", url: "archivos/Guia_Derivadas.pdf" },
+  { nombre: "Ejercicios Comunicación.docx", curso: "Comunicación", responsable: "Profesor", fecha: "2025-10-14", estado: "Pendiente", comentario: "", url: "archivos/Ejercicios_Comunicacion.docx" },
+  { nombre: "Guía de laboratorio.pdf", curso: "Física", responsable: "Coordinador", fecha: "2025-10-13", estado: "Pendiente", comentario: "", url: "archivos/Guia_Laboratorio.pdf" },
+];
+
+const cursoSelect = document.getElementById("cursoSelect");
+const responsableSelect = document.getElementById("responsableSelect");
+const tabla = document.querySelector("#archivosTable tbody");
+
+function mostrarArchivos() {
+  const curso = cursoSelect.value;
+  const responsable = responsableSelect.value;
+  tabla.innerHTML = "";
+
+  const filtrados = archivos.filter(a =>
+    (!curso || a.curso === curso) &&
+    (!responsable || a.responsable === responsable)
+  );
+
+  if (filtrados.length === 0) {
+    tabla.innerHTML = `<tr><td colspan="6" class="text-muted">No hay archivos para mostrar.</td></tr>`;
+    return;
+  }
+
+  filtrados.forEach((a, index) => {
+    const fila = document.createElement("tr");
+    fila.className = a.estado === "Aprobado" ? "aprobado" : a.estado === "Rechazado" ? "rechazado" : "";
+
+    fila.innerHTML = `
+      <td>${a.nombre}</td>
+      <td>${a.curso}</td>
+      <td>${a.responsable}</td>
+      <td>${a.fecha}</td>
+      <td>
+        <a href="${a.url}" download="${a.nombre}" class="btn btn-primary btn-sm me-1">⬇ Descargar</a>
+        ${a.estado === "Pendiente" ? `
+          <button class="btn btn-success btn-sm me-1 aprobarBtn" data-nombre="${a.nombre}">✔ Aprobar</button>
+          <button class="btn btn-danger btn-sm rechazarBtn" data-nombre="${a.nombre}">❌ Rechazar</button>
+        ` : ""}
+      </td>
+      <td>
+        ${a.estado}
+        ${a.comentario ? `<br><small class="text-muted">Motivo: ${a.comentario}</small>` : ""}
+      </td>
+    `;
+    tabla.appendChild(fila);
+  });
+}
+
+cursoSelect.addEventListener("change", mostrarArchivos);
+responsableSelect.addEventListener("change", mostrarArchivos);
+
+tabla.addEventListener("click", (e) => {
+  if (e.target.classList.contains("aprobarBtn")) {
+    const nombre = e.target.dataset.nombre;
+    const archivo = archivos.find(a => a.nombre === nombre);
+    archivo.estado = "Aprobado";
+    archivo.comentario = "";
+    mostrarArchivos();
+  }
+
+  if (e.target.classList.contains("rechazarBtn")) {
+    const nombre = e.target.dataset.nombre;
+    const archivo = archivos.find(a => a.nombre === nombre);
+    const motivo = prompt("Ingrese el motivo del rechazo:");
+    if (motivo) {
+      archivo.estado = "Rechazado";
+      archivo.comentario = motivo;
+      mostrarArchivos();
+    }
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

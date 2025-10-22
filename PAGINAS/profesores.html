@@ -15,6 +15,11 @@
       </div>
     </nav>
 
+    <div class="export-buttons">
+      <button onclick="exportarCSV()">Exportar a CSV</button>
+      <button onclick="exportarExcel()">Exportar a Excel</button>
+    </div>
+
     <div class="container my-4">
       <h2>Gestión de Profesores</h2>
 
@@ -77,6 +82,16 @@
           <div class="invalid-feedback">El teléfono debe tener 9 dígitos.</div>
         </div>
 
+        <div class="col-md-2">
+          <label for="estado" class="form-label">Estado</label>
+          <select id="estado" class="form-select" required>
+            <option value="" selected disabled>Seleccione...</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+          <div class="invalid-feedback">Seleccione el estado.</div>
+        </div>
+
         <div class="col-12">
           <button type="submit" id="btnSubmit" class="btn btn-primary">Agregar</button>
         </div>
@@ -95,6 +110,7 @@
               <th>Grado Académico</th>
               <th>Fecha de Ingreso</th>
               <th>Teléfono</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
