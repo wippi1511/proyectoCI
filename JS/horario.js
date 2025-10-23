@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Inicializar calendario
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
-        locale: "es", // ✅ Cambia todo a español
+        locale: "es", 
         headerToolbar: {
             left: "prev,next today",
             center: "title",
