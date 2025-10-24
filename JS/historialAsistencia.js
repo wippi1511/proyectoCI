@@ -10,11 +10,21 @@ async function cargarAulas() {
   const select = document.getElementById("aulaSelect");
   select.innerHTML = '<option value="">--Todas--</option>';
   data.forEach(aula => {
-    const option = document.createElement("option");
-    option.value = aula.id;
-    option.textContent = aula.nombre;
-    select.appendChild(option);
-  });
+  const option = document.createElement("option");
+
+  // usa el id correcto (idaula en tu JSON)
+  option.value = aula.idaula || aula.id;
+
+  // texto visible: curso + profesor
+  const cursoNombre = aula.curso?.nombre || "Sin curso";
+  const profesorNombre = aula.profesor
+    ? `${aula.profesor.nombre} ${aula.profesor.apellidos}`
+    : "Sin profesor";
+
+  option.textContent = `${cursoNombre} - ${profesorNombre}`;
+  select.appendChild(option);
+});
+
 }
 
 async function cargarAlumnos() {
@@ -55,7 +65,7 @@ function mostrarHistorial(lista) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${a.fecha}</td>
-      <td>${a.aula?.nombre || ""}</td>
+      <td>${a.aula?.curso?.nombre || "Sin curso"}</td>
       <td>${a.alumno?.nombres} ${a.alumno?.apellidos}</td>
       <td>${a.estado}</td>
       <td>${a.observacion || ""}</td>
