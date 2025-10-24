@@ -157,7 +157,15 @@ CREATE TABLE asistencia (
     FOREIGN KEY (idaula) REFERENCES aula(id)
 );
 
-
+create table registro_desempeño
+(
+id int auto_increment primary key,
+idprofesor int not null,
+nombre varchar(50) not null,
+apellidos varchar(50) not null,
+grado_academico varchar(50),
+foreign key (idprofesor) references profesor(idprofesor)
+)
 
 
 
