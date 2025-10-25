@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           title: "Matemáticas Aplicadas",
           aula: "Aula 201",
-          profesor: "Ing. Ramírez",
           start: "2025-10-21T08:00:00",
           end: "2025-10-21T10:00:00",
           color: "#007bff"
@@ -13,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           title: "Física II",
           aula: "Aula 303",
-          profesor: "Dra. López",
           start: "2025-10-22T09:00:00",
           end: "2025-10-22T11:00:00",
           color: "#28a745"
@@ -21,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           title: "Taller de Robótica",
           aula: "Laboratorio 1",
-          profesor: "Mtro. Pérez",
           start: "2025-10-23T13:00:00",
           end: "2025-10-23T15:00:00",
           color: "#ffc107"
@@ -48,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
             // Mostrar datos en el modal
                 document.getElementById("modalTitulo").textContent = info.event.title;
                 document.getElementById("modalAula").textContent = info.event.extendedProps.aula || "No especificada";
-                document.getElementById("modalProfesor").textContent = info.event.extendedProps.profesor || "Desconocido";
                 document.getElementById("modalInicio").textContent = new Date(info.event.start).toLocaleString();
                 document.getElementById("modalFin").textContent = info.event.end ? new Date(info.event.end).toLocaleString() : "No especificado";
 
