@@ -182,7 +182,7 @@ form.addEventListener("submit", async (e) => {
 });
 
 // === LISTAR AULAS ===
-// Helper: formatea un array de días tolerando distintos nombres de campo
+
 function formatoDiasTexto(dias) {
   if (!dias || dias.length === 0) return "Sin días asignados";
 
@@ -191,7 +191,7 @@ function formatoDiasTexto(dias) {
     const dia = d.dia || d.diaSemana || d.dia_semana || d.day || d.nombreDia || "";
     const hi = d.horaInicio || d.hora_inicio || d.hora || d.startTime || "";
     const hf = d.horaFin || d.hora_fin || d.endTime || "";
-    // si vienen como objetos (por serialización) intentamos usar toString
+  
     const hiStr = hi ? hi : "";
     const hfStr = hf ? hf : "";
     return `${dia} (${hiStr}${hiStr && hfStr ? ' - ' : ''}${hfStr})`;
@@ -231,7 +231,7 @@ async function listarAulas() {
       tablaAulas.appendChild(tr);
     });
 
-    // después de renderizar la tabla, asignamos los eventos
+    
     agregarEventosVer();
     asignarEventosEditar();
     asignarEventosEliminar();
@@ -245,14 +245,14 @@ async function listarAulas() {
 function agregarEventosVer() {
   const botonesVer = document.querySelectorAll(".detalles-btn");
   botonesVer.forEach(btn => {
-    btn.removeEventListener("click", handleVerClick); // por si ya estaba
+    btn.removeEventListener("click", handleVerClick); 
     btn.addEventListener("click", handleVerClick);
   });
 }
 function handleVerClick(e) {
   const id = e.currentTarget.dataset.id;
   if (!id) { console.error("No se encontró el ID del aula (ver)"); return; }
-  // Ajusta la ruta relativa según tu estructura de carpetas
+  
   window.location.href = `detallesAula.html?id=${id}`;
 }
 

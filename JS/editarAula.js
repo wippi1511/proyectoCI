@@ -17,7 +17,7 @@ const agregarDiaBtn = document.getElementById("agregarDiaBtn");
 
 const urlParams = new URLSearchParams(window.location.search);
 const idAula = urlParams.get("id");
-console.log("🟢 idAula obtenido:", idAula);
+
 
 let alumnos = [];
 let alumnosFiltrados = [];
