@@ -157,6 +157,19 @@ CREATE TABLE asistencia (
     FOREIGN KEY (idaula) REFERENCES aula(id)
 );
 
+CREATE TABLE historial_asistencia (
+    idhistorial INT AUTO_INCREMENT PRIMARY KEY,
+    idasistencia INT,
+    idaula INT,
+    idalumno INT,
+    fecha DATE,
+    estado VARCHAR(20),
+    observacion TEXT,
+    tipo_operacion VARCHAR(10),
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 create table registro_desempeño
 (
 id int auto_increment primary key,
@@ -347,3 +360,81 @@ BEGIN
 END$$
 
 DELIMITER ;
+DELIMITER $$
+
+CREATE TRIGGER alumnos_insert
+AFTER INSERT ON aula_alumnos
+FOR EACH ROW
+BEGIN
+    DECLARE v_cantidad_alumnos INT;
+
+    SELECT COUNT(*) INTO v_cantidad_alumnos
+    FROM aula_alumnos
+    WHERE idaula = NEW.idaula;
+
+    UPDATE historial
+    SET cantidad_alumnos = v_cantidad_alumnos
+    WHERE idaula = NEW.idaula
+    ORDER BY idhistorial DESC
+    LIMIT 1;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER alumnos_delete
+AFTER DELETE ON aula_alumnos
+FOR EACH ROW
+BEGIN
+    DECLARE v_cantidad_alumnos INT;
+
+    SELECT COUNT(*) INTO v_cantidad_alumnos
+    FROM aula_alumnos
+    WHERE idaula = OLD.idaula;
+
+    UPDATE historial
+    SET cantidad_alumnos = v_cantidad_alumnos
+    WHERE idaula = OLD.idaula
+    ORDER BY idhistorial DESC
+    LIMIT 1;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER asistencia_insert
+AFTER INSERT ON asistencia
+FOR EACH ROW
+BEGIN
+    INSERT INTO historial_asistencia (idasistencia, idaula, idalumno, fecha, estado, observacion, tipo_operacion)
+    VALUES (NEW.idasistencia, NEW.idaula, NEW.idalumno, NEW.fecha, NEW.estado, NEW.observacion, 'INSERT');
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER asistencia_update
+AFTER UPDATE ON asistencia
+FOR EACH ROW
+BEGIN
+    INSERT INTO historial_asistencia (idasistencia, idaula, idalumno, fecha, estado, observacion, tipo_operacion)
+    VALUES (NEW.idasistencia, NEW.idaula, NEW.idalumno, NEW.fecha, NEW.estado, NEW.observacion, 'UPDATE');
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER asistencia_delete
+AFTER DELETE ON asistencia
+FOR EACH ROW
+BEGIN
+    INSERT INTO historial_asistencia (idasistencia, idaula, idalumno, fecha, estado, observacion, tipo_operacion)
+    VALUES (OLD.idasistencia, OLD.idaula, OLD.idalumno, OLD.fecha, OLD.estado, OLD.observacion, 'DELETE');
+END $$
+
+DELIMITER ;
+
