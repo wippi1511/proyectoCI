@@ -53,18 +53,7 @@ public class AsistenciaController {
         return asistenciaService.obtenerAlumnosPorAula(idAula);
     }
 
-    @GetMapping("/historial")
-    public List<Asistencia> obtenerHistorial(
-            @RequestParam(required = false) Integer idAula,
-            @RequestParam(required = false) Integer idAlumno,
-            @RequestParam(required = false) String inicio,
-            @RequestParam(required = false) String fin) {
 
-        LocalDate fechaInicio = (inicio != null && !inicio.isEmpty()) ? LocalDate.parse(inicio) : null;
-        LocalDate fechaFin = (fin != null && !fin.isEmpty()) ? LocalDate.parse(fin) : null;
-
-        return asistenciaService.obtenerHistorial(idAula, idAlumno, fechaInicio, fechaFin);
-    }
 
 }
 
