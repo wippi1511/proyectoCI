@@ -1,0 +1,52 @@
+package com.carpeta.aula.controller;
+
+import com.carpeta.aula.model.Competencia;
+import com.carpeta.aula.service.CompetenciaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+
+@RestController
+@RequestMapping("/api/competencias")
+@CrossOrigin(origins = "*")
+public class CompetenciaController {
+    @Autowired
+    private CompetenciaService competenciaService;
+
+    // 🔹 Listar todos los competenciaes
+    @GetMapping
+    public List<Competencia> listarCompetencias() {
+        return competenciaService.listarCompetencias();
+    }
+
+    // 🔹 Obtener competencia por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Competencia> obtenerPorId(@PathVariable Integer id) {
+        Competencia competencia = competenciaService.obtenerPorId(id);
+        return competencia != null ? ResponseEntity.ok(competencia) : ResponseEntity.notFound().build();
+    }
+
+    // 🔹 Crear competencia
+    @PostMapping("/crear")
+    public ResponseEntity<Competencia> crearCompetencia(@RequestBody Competencia competencia) {
+        Competencia nuevo = competenciaService.crearCompetencia(competencia);
+        return ResponseEntity.ok(nuevo);
+    }
+
+    // 🔹 Actualizar competencia
+    @PutMapping("/{id}")
+    public ResponseEntity<Competencia> actualizarCompetencia(@PathVariable Integer id, @RequestBody Competencia competencia) {
+        Competencia actualizado = competenciaService.actualizarCompetencia(id, competencia);
+        return actualizado != null ? ResponseEntity.ok(actualizado) : ResponseEntity.notFound().build();
+    }
+
+    // 🔹 Eliminar competencia
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarCompetencia(@PathVariable Integer id) {
+        competenciaService.eliminarCompetencia(id);
+        return ResponseEntity.noContent().build();
+    }
+}

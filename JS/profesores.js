@@ -1,150 +1,177 @@
-    let Profesores = JSON.parse(localStorage.getItem("Profesores")) || [];
-    let editandoId = null;
-    let nextId = Profesores.length ? Profesores[Profesores.length - 1].id + 1 : 1;
+const API_URL = "http://localhost:8080/api/profesores";
+const API_USUARIOS = "http://localhost:8080/api/usuarios/activos"; 
 
-    const form = document.getElementById("formProfesor");
-    const tbody = document.querySelector("#tablaProfesores tbody");
-    const btnSubmit = document.getElementById("btnSubmit");
-    const inputUsuario = document.getElementById("usuario");
-    const inputNombres = document.getElementById("nombres");
-    const inputDni = document.getElementById("dni");
-    const inputApellidos = document.getElementById("apellidos");
-    const inputGrado_academico = document.getElementById("grado_academico");
-    const inputFecha_ingreso = document.getElementById("fecha_ingreso");
-    const inputTelefono = document.getElementById("telefono");
-    const inputEstado = document.getElementById("estado");
+const form = document.getElementById("formProfesor");
+const tbody = document.querySelector("#tablaProfesores tbody");
+const btnSubmit = document.getElementById("btnSubmit");
 
-    function guardarLocal() {
-      localStorage.setItem("Profesores", JSON.stringify(Profesores));
-    }
+const inputUsuario = document.getElementById("usuario");
+const inputDni = document.getElementById("dni");
+const inputNombre = document.getElementById("nombre");
+const inputApellidos = document.getElementById("apellidos");
+const inputGrado = document.getElementById("grado_academico");
+const inputFecha = document.getElementById("fecha_ingreso");
+const inputTelefono = document.getElementById("telefono");
 
-    function render() {
-      tbody.innerHTML = "";
-      for (const prof of Profesores) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${prof.id}</td>
-          <td>${prof.usuario}</td>
-          <td>${prof.dni}</td>
-          <td>${prof.nombres}</td>
-          <td>${prof.apellidos}</td>
-          <td>${prof.grado_academico}</td>
-          <td>${prof.fecha_ingreso}</td>
-          <td>${prof.telefono}</td>
-          <td>${prof.estado}</td>
-          <td>
-            <button class="btn btn-warning btn-sm" onclick="editar(${prof.id})">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="eliminar(${prof.id})">Eliminar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      }
-    }
+let editandoId = null;
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      const usuario = inputUsuario.value.trim();
-      const dni = inputDni.value;
-      const nombres = inputNombres.value.trim();
-      const apellidos = inputApellidos.value.trim();
-      const grado_academico = inputGrado_academico.value.trim();
-      const fecha_ingreso = inputFecha_ingreso.value;
-      const telefono = inputTelefono.value;
-      const estado = inputEstado.value;
-      if (!usuario || !nombres || !apellidos) return;
-      if (editandoId === null) {
-        Profesores.push({
-          id: nextId++,
-          usuario,
-          dni,
-          nombres,
-          apellidos,
-          grado_academico,
-          fecha_ingreso,
-          telefono,
-          estado
-        });
-      } else {
-        const prof = Profesores.find(x => x.id === editandoId);
-        if (prof) {
-          prof.usuario = usuario;
-          prof.dni = dni;
-          prof.nombres = nombres;
-          prof.apellidos = apellidos;
-          prof.grado_academico = grado_academico;
-          prof.fecha_ingreso = fecha_ingreso;
-          prof.telefono = telefono;
-          prof.estado = estado;
-        }
-        editandoId = null;
-        btnSubmit.textContent = "Agregar";
-      }
-      guardarLocal();
-      render();
-      form.reset();
+// 🟦 Cargar usuarios en el select
+async function cargarUsuariosSelect() {
+  try {
+    const res = await fetch(API_USUARIOS);
+    if (!res.ok) throw new Error("Error al cargar usuarios");
+    const usuarios = await res.json();
+    inputUsuario.innerHTML = `<option value="">Seleccione un usuario</option>`;
+    usuarios.forEach(u => {
+      const option = document.createElement("option");
+      option.value = u.id;
+      option.textContent = u.usuario; // 'usuario' es el nombre de usuario
+      inputUsuario.appendChild(option);
     });
+  } catch (error) {
+    console.error(error);
+    inputUsuario.innerHTML = `<option value="">Error al cargar usuarios</option>`;
+  }
+}
 
-    window.editar = function(id) {
-      const prof = Profesores.find(x => x.id === id);
-      if (!prof) return;
-      inputUsuario.value = prof.usuario;
-      inputDni.value = prof.dni;
-      inputNombres.value = prof.nombres;
-      inputApellidos.value = prof.apellidos;
-      inputGrado_academico.value = prof.grado_academico;
-      inputFecha_ingreso.value = prof.fecha_ingreso;
-      inputTelefono.value = prof.telefono;
-      inputEstado.value = prof.estado;
-      btnSubmit.textContent = "Actualizar";
-      editandoId = id;
-    };
+// Cargar todos los profesores
+async function cargarProfesores() {
+  const res = await fetch(API_URL);
+  if (!res.ok) {
+    alert("Error al obtener los profesores");
+    return;
+  }
+  const data = await res.json();
+  render(data);
+}
 
-    window.eliminar = function(id) {
-      const prof = Profesores.find(p => p.id === id);
-      if (prof) {
-        prof.estado = "Inactivo"; // Cambia el estado en lugar de eliminar
-        guardarLocal();
-        render();
-      }
-    };
+// Renderizar tabla
+function render(profesores) {
+  tbody.innerHTML = "";
+  profesores.forEach(p => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${p.idprofesor}</td>
+      <td>${p.usuario?.usuario || "(sin usuario)"}</td>
+      <td>${p.dni}</td>
+      <td>${p.nombre}</td>
+      <td>${p.apellidos}</td>
+      <td>${p.gradoAcademico}</td>
+      <td>${p.fechaIngreso}</td>
+      <td>${p.telefono}</td>
+      <td>
+        <button class="btn btn-warning btn-sm" onclick="editar(${p.idprofesor})">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminar(${p.idprofesor})">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
+// Enviar datos al servidor (crear o editar)
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    // Inicial render
-    render();
-    function exportarCSV() {
-      const tabla = document.getElementById("tablaProfesores");
-      let csv = [];
-      for (let fila of tabla.rows) {
-        let datosFila = [];
-        for (let i = 0; i < fila.cells.length - 1; i++) { // -1 para saltar la columna "Acciones"
-          datosFila.push(fila.cells[i].innerText);
-        }
+  const profesor = {
+    usuario: { id: inputUsuario.value },
+    dni: inputDni.value,
+    nombre: inputNombre.value.trim(),
+    apellidos: inputApellidos.value.trim(),
+    gradoAcademico: inputGrado.value,
+    fechaIngreso: inputFecha.value,
+    telefono: inputTelefono.value
+  };
 
-        csv.push(datosFila.join(","));
-      }
+  let metodo = "POST";
+  let url = API_URL;
 
-      const blob = new Blob([csv.join("\n")], { type: "text/csv" });
-      const enlace = document.createElement("a");
-      enlace.href = URL.createObjectURL(blob);
-      enlace.download = "lista_profesores.csv";
-      enlace.click();
-    }
+  if (editandoId !== null) {
+    metodo = "PUT";
+    url = `${API_URL}/${editandoId}`;
+  }
 
-    // Función para exportar a Excel (usando formato simple .xls)
-    function exportarExcel() {
-      let tablaOriginal = document.getElementById("tablaProfesores");
-      let tablaCopia = tablaOriginal.cloneNode(true);
+  const res = await fetch(url, {
+    method: metodo,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profesor)
+  });
 
-      // Eliminar la última columna ("Acciones") de cada fila
-      for (let fila of tablaCopia.rows) {
-        fila.deleteCell(fila.cells.length - 1);
-      }
+  if (res.ok) {
+    alert(editandoId ? "Profesor actualizado correctamente" : "Profesor agregado correctamente");
+    form.reset();
+    btnSubmit.textContent = "Agregar";
+    editandoId = null;
+    cargarProfesores();
+  } else {
+    alert("Error al guardar el profesor");
+  }
+});
 
-      const tabla = tablaCopia.outerHTML;
+// Editar profesor
+window.editar = async function(id) {
+  const res = await fetch(`${API_URL}/${id}`);
+  if (!res.ok) return alert("No se pudo cargar el profesor");
 
-      const blob = new Blob(['\ufeff' + tabla], { type: 'application/vnd.ms-excel' });
-      const enlace = document.createElement('a');
-      enlace.href = URL.createObjectURL(blob);
-      enlace.download = 'lista_profesores.xls';
-      enlace.click();
-    }
+  const p = await res.json();
+  inputUsuario.value = p.usuario?.id || "";
+  inputDni.value = p.dni;
+  inputNombre.value = p.nombre;
+  inputApellidos.value = p.apellidos;
+  inputGrado.value = p.gradoAcademico;
+  inputFecha.value = p.fechaIngreso;
+  inputTelefono.value = p.telefono;
+
+  btnSubmit.textContent = "Actualizar";
+  editandoId = id;
+};
+
+// Eliminar profesor 
+window.eliminar = async function(id) {
+  if (!confirm("¿Desea eliminar este profesor?")) return;
+
+  const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  if (res.ok) {
+    alert("Profesor eliminado correctamente");
+    cargarProfesores();
+  } else {
+    alert("Error al eliminar el profesor");
+  }
+};
+
+// Exportar a CSV
+function exportarCSV() {
+  const filas = [...document.querySelectorAll("#tablaProfesores tbody tr")];
+  let csv = "ID,Usuario,DNI,Nombre,Apellidos,Grado Académico,Fecha Ingreso,Teléfono\n";
+
+  filas.forEach(f => {
+    const celdas = [...f.children].slice(0, 8); // sin columna "Acciones"
+    csv += celdas.map(td => td.innerText).join(",") + "\n";
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = "profesores.csv";
+  enlace.click();
+}
+
+// Exportar a Excel
+function exportarExcel() {
+  let tablaOriginal = document.getElementById("tablaProfesores");
+  let tablaCopia = tablaOriginal.cloneNode(true);
+
+  for (let fila of tablaCopia.rows) {
+    fila.deleteCell(fila.cells.length - 1); // quitar columna Acciones
+  }
+
+  const tabla = tablaCopia.outerHTML;
+  const blob = new Blob(['\ufeff' + tabla], { type: 'application/vnd.ms-excel' });
+  const enlace = document.createElement('a');
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = 'profesores.xls';
+  enlace.click();
+}
+
+// Inicializar
+cargarUsuariosSelect();
+cargarProfesores();
