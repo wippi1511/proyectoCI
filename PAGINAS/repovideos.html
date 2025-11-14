@@ -11,10 +11,8 @@
 </head>
 <body>
 
-  <!-- Botón menú -->
   <button class="menu-toggle btn btn-primary">☰</button>
 
-  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <h4>📂 Carpeta Instruccional SIDEM</h4>
     <a href="index.html">🏠 Inicio</a>
@@ -25,10 +23,8 @@
     <a href="repovideos.html" class="active">🎥 Repositorio</a>
   </div>
 
-  <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- Contenido -->
   <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="fw-bold text-primary">Repositorio de Videos</h2>
@@ -51,7 +47,6 @@
     </div>
   </div>
 
-  <!-- Modal subir video -->
   <div class="modal fade" id="modalVideo" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -80,9 +75,10 @@
             </div>
 
             <div class="mb-3">
-              <label for="archivo" class="form-label">Archivo de Video o Audio (.mp4, .mp3)</label>
-              <input type="file" id="archivo" class="form-control" accept=".mp4,.mp3" required />
+              <label for="link" class="form-label">Enlace del Video (URL)</label>
+              <input type="url" id="link" class="form-control" placeholder="https://..." required />
             </div>
+
           </div>
 
           <div class="modal-footer">
@@ -94,7 +90,6 @@
     </div>
   </div>
 
-  <!-- Modal visor -->
   <div class="modal fade" id="visorModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content bg-dark text-light">
@@ -107,8 +102,10 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> 
 
   <script src="../JS/repovideos.js"></script>
 </body>
 </html>
+
+<!--prueba para el git pull-->

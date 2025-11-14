@@ -1,5 +1,7 @@
-let videos = JSON.parse(localStorage.getItem("videos")) || [];
+let videos = [];
 let editIndex = -1;
+
+const API_URL = "http://localhost:8080/api/videos";
 
 const form = document.getElementById("videoForm");
 const tabla = document.getElementById("tablaVideos");
@@ -8,8 +10,9 @@ const visorModal = new bootstrap.Modal(document.getElementById("visorModal"));
 const visorVideo = document.getElementById("visorVideo");
 const visorTitulo = document.getElementById("visorTitulo");
 
-// 🔸 modal de confirmación
 let confirmModal;
+
+// modal confirmación eliminar
 function mostrarConfirmacion(mensaje, onConfirm) {
   const modalHTML = `
     <div class="modal fade" id="confirmModal" tabindex="-1">
@@ -33,35 +36,45 @@ function mostrarConfirmacion(mensaje, onConfirm) {
   document.body.insertAdjacentHTML("beforeend", modalHTML);
   confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
   confirmModal.show();
+
   document.getElementById("confirmBtn").onclick = () => {
     onConfirm();
     confirmModal.hide();
     document.getElementById("confirmModal").remove();
   };
+
   document.getElementById("confirmModal").addEventListener("hidden.bs.modal", () => {
     document.getElementById("confirmModal")?.remove();
   });
 }
 
-// 🔹 cargar cursos desde localStorage
-function cargarCursos() {
-  const cursos = JSON.parse(localStorage.getItem("cursos")) || [];
-  const select = document.getElementById("cursoSelect");
-  select.innerHTML = "";
-  cursos.forEach(curso => {
-    const option = document.createElement("option");
-    option.value = curso.nombre;
-    option.textContent = curso.nombre;
-    select.appendChild(option);
-  });
+async function cargarCursos() {
+  try {
+    const res = await fetch("http://localhost:8080/api/cursos/activos");
+    const cursos = await res.json();
+
+    const select = document.getElementById("cursoSelect");
+    select.innerHTML = "";
+
+    cursos.forEach(curso => {
+      const option = document.createElement("option");
+      option.value = curso.nombre;
+      option.textContent = curso.nombre;
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error("Error cargando cursos:", error);
+  }
 }
 
-// 🔹 guardar en localStorage
-function guardarVideos() {
-  localStorage.setItem("videos", JSON.stringify(videos));
+// obtener videos del backend
+async function cargarVideos() {
+  const res = await fetch(API_URL);
+  videos = await res.json();
+  mostrarVideos();
 }
 
-// 🔹 mostrar tabla
 function mostrarVideos() {
   tabla.innerHTML = "";
   videos.forEach((v, i) => {
@@ -72,22 +85,21 @@ function mostrarVideos() {
         <td><div class="descripcion-cuadro">${v.descripcion}</div></td>
         <td>
           <button class="btn btn-sm btn-success me-2" onclick="verVideo(${i})">Ver</button>
-          <a href="${v.url}" download="${v.titulo}" class="btn btn-sm btn-info text-white">Descargar</a>
+          <a href="${v.link}" download="${v.titulo}" class="btn btn-sm btn-info text-white">Descargar</a>
         </td>
         <td>
           <button class="btn btn-sm btn-warning me-2" onclick="editarVideo(${i})">Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="eliminarVideo(${i})">Eliminar</button>
+          <button class="btn btn-sm btn-danger" onclick="eliminarVideo(${v.id})">Eliminar</button>
         </td>
       </tr>
     `;
   });
 }
 
-// 🔹 visor de video
 function verVideo(index) {
   const video = videos[index];
   visorTitulo.textContent = video.titulo;
-  visorVideo.src = video.url;
+  visorVideo.src = video.link;
   visorModal.show();
 }
 
@@ -96,8 +108,7 @@ document.getElementById("visorModal").addEventListener("hidden.bs.modal", () => 
   visorVideo.src = "";
 });
 
-// 🔹 guardar o editar video
-form.addEventListener("submit", e => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
 
   const titulo = document.getElementById("titulo").value.trim();
@@ -105,58 +116,55 @@ form.addEventListener("submit", e => {
   const curso = document.getElementById("cursoSelect").value;
   const archivo = document.getElementById("archivo").files[0];
 
-  // validar longitud descripción
   if (descripcion.length > 100) {
     alert("La descripción no puede superar los 100 caracteres.");
     return;
   }
 
-  // si hay archivo nuevo
-  if (archivo) {
-    if (!["video/mp4", "audio/mpeg"].includes(archivo.type)) {
-      alert("Solo se permiten archivos MP4 o MP3.");
-      return;
-    }
-
-    if (archivo.size > 4 * 1024 * 1024) {
-      alert("El archivo es demasiado grande (máximo 4 MB).");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const base64 = event.target.result;
-      guardarVideo(titulo, descripcion, curso, base64, archivo.type);
-    };
-    reader.readAsDataURL(archivo);
-  }
-
-  // si no hay archivo pero estamos editando
-  else if (editIndex !== -1) {
-    const v = videos[editIndex];
-    guardarVideo(titulo, descripcion, curso, v.url, v.tipo);
-  }
-
-  // si no hay archivo y es nuevo
-  else {
+  if (!archivo && editIndex === -1) {
     alert("Debe subir un archivo de video o audio.");
+    return;
   }
+
+  let linkFinal;
+
+  if (archivo) {
+    linkFinal = URL.createObjectURL(archivo);
+  } else {
+    linkFinal = videos[editIndex].link;
+  }
+
+  const data = {
+    titulo,
+    descripcion,
+    curso,
+    link: linkFinal
+  };
+
+  if (editIndex === -1) {
+    // crear
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+  } else {
+    // editar
+    const id = videos[editIndex].id;
+    await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+  }
+
+  modal.hide();
+  form.reset();
+  editIndex = -1;
+  cargarVideos();
 });
 
-function guardarVideo(titulo, descripcion, curso, url, tipo) {
-  const nuevoVideo = { titulo, descripcion, curso, url, tipo };
-
-  if (editIndex === -1) videos.push(nuevoVideo);
-  else videos[editIndex] = nuevoVideo;
-
-  guardarVideos();
-  form.reset();
-  modal.hide();
-  mostrarVideos();
-  editIndex = -1;
-}
-
-// 🔹 editar video
+// editar video
 function editarVideo(i) {
   const v = videos[i];
   document.getElementById("titulo").value = v.titulo;
@@ -167,22 +175,21 @@ function editarVideo(i) {
   modal.show();
 }
 
-// 🔹 eliminar con confirmación
-function eliminarVideo(i) {
-  mostrarConfirmacion(`¿Seguro que deseas eliminar "<b>${videos[i].titulo}</b>"?`, () => {
-    videos.splice(i, 1);
-    guardarVideos();
-    mostrarVideos();
+// eliminar video backend
+function eliminarVideo(id) {
+  mostrarConfirmacion(`¿Seguro que deseas eliminar este video?`, async () => {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    cargarVideos();
   });
 }
 
-// 🔹 reset al cerrar modal
+// reset modal
 document.getElementById("modalVideo").addEventListener("hidden.bs.modal", () => {
   form.reset();
   editIndex = -1;
 });
 
-// 🔹 menú lateral
+// menú lateral
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const toggleBtn = document.querySelector(".menu-toggle");
@@ -201,5 +208,7 @@ overlay.addEventListener("click", () => {
 
 window.addEventListener("load", () => {
   cargarCursos();
-  mostrarVideos();
+  cargarVideos();
 });
+
+// prueba para git pull
